@@ -1,0 +1,153 @@
+{% extends "plantilla.html" %}
+
+{% block contenido %}
+<div class="container my-5">
+    <h2 class="my-4 text-center text-primary"><i class="fas fa-cogs"></i> NUEVO PLAN DE MANTENIMIENTO</h2>
+
+    <form action="{% url 'guardarPlanMantenimiento' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Estructura -->
+        <div class="form-group">
+            <label for="estructura">
+                <i class="fas fa-building"></i> Estructura
+            </label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-building"></i></span>
+                <select class="form-control" id="estructura" name="estructura" required>
+                    <option value="" disabled selected>Seleccione una estructura</option>
+                    {% for estructura in estructuras %}
+                        <option value="{{ estructura.id }}">{{ estructura.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <!-- Tipo de Mantenimiento -->
+        <div class="form-group mt-3">
+            <label for="tipo">
+                <i class="fas fa-cogs"></i> Tipo de Mantenimiento
+            </label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-cogs"></i></span>
+                <select class="form-control" id="tipo" name="tipo" required>
+                    <option value="Preventivo">Preventivo</option>
+                    <option value="Correctivo">Correctivo</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Fecha de Inicio -->
+        <div class="form-group mt-3">
+            <label for="fecha_inicio">
+                <i class="fas fa-calendar-alt"></i> Fecha de Inicio
+            </label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" required>
+            </div>
+        </div>
+
+        <!-- Fecha de Fin -->
+        <div class="form-group mt-3">
+            <label for="fecha_fin">
+                <i class="fas fa-calendar-check"></i> Fecha de Fin (opcional)
+            </label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-calendar-check"></i></span>
+                <input type="date" class="form-control" id="fecha_fin" name="fecha_fin">
+            </div>
+        </div>
+
+        <!-- Estado -->
+        <div class="form-group mt-3">
+            <label for="estado">
+                <i class="fas fa-heartbeat"></i> Estado
+            </label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-heartbeat"></i></span>
+                <select class="form-control" id="estado" name="estado" required>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="En Proceso">En Proceso</option>
+                    <option value="Finalizado">Finalizado</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="form-group mt-3">
+            <label for="descripcion">
+                <i class="fas fa-comment"></i> Descripción
+            </label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-comment"></i></span>
+                <textarea class="form-control" id="descripcion" name="descripcion" placeholder="Ingrese una descripción" rows="4"></textarea>
+            </div>
+        </div>
+
+        <!-- Documento (Imagen o PDF) -->
+        <div class="form-group mt-3">
+            <label for="documento"><i class="fas fa-upload"></i> Subir Documento (Imagen o PDF)</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-upload"></i></span>
+                <input type="file" class="form-control" id="documento" name="documento" accept="image/*,application/pdf">
+            </div>
+            <!-- Vista previa del archivo -->
+            <div class="mt-3" id="preview-container" style="display: none;">
+                <label>Vista previa:</label>
+                <img id="preview-img" class="img-thumbnail" style="max-width: 50%; display: none;">
+                <embed id="preview-pdf" type="application/pdf" style="width: 50%; height: auto; display: none;">
+                <a id="preview-link" href="#" target="_blank" style="display: none;">Ver archivo PDF</a>
+            </div>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="d-flex justify-content-center mt-4">
+            <button type="submit" class="btn btn-primary me-2">
+                <i class="fas fa-save"></i> Guardar
+            </button>
+            <a href="{% url 'listadoMantenimiento' %}" class="btn btn-danger">
+                <i class="fas fa-times-circle"></i> Cancelar
+            </a>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.getElementById("documento").addEventListener("change", function(event) {
+        var file = event.target.files[0];
+        var previewContainer = document.getElementById("preview-container");
+        var previewImg = document.getElementById("preview-img");
+        var previewPdf = document.getElementById("preview-pdf");
+        var previewLink = document.getElementById("preview-link");
+
+        if (file) {
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                previewContainer.style.display = "block";
+                var fileType = file.type;
+
+                if (fileType.startsWith("image/")) {
+                    previewImg.src = e.target.result;
+                    previewImg.style.display = "block";
+                    previewPdf.style.display = "none";
+                    previewLink.style.display = "none";
+                } else if (fileType === "application/pdf") {
+                    previewPdf.src = e.target.result;
+                    previewPdf.style.display = "block";
+                    previewImg.style.display = "none";
+                    previewLink.href = e.target.result;
+                    previewLink.style.display = "block";
+                    previewLink.innerText = "Ver archivo PDF";
+                } else {
+                    previewContainer.style.display = "none";
+                }
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewContainer.style.display = "none";
+        }
+    });
+</script>
+{% endblock %}

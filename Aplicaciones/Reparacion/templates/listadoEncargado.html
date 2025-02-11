@@ -1,0 +1,93 @@
+{% extends "plantilla.html" %}
+
+{% block contenido %}
+<div class="container my-5 bg-light p-4 rounded shadow">
+    <h2 class="my-4 text-center text-primary">
+        <i class="fas fa-users"></i> LISTADO DE ENCARGADOS
+    </h2>
+
+    {% if messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {% for message in messages %}
+                <p class="mb-0">{{ message }}</p>
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    {% endif %}
+
+    <div class="d-flex justify-content-end mb-4">
+        <a href="{% url 'nuevoEncargado' %}" class="btn btn-outline-success btn-lg shadow">
+            <i class="fas fa-plus-circle"></i> Agregar
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table id="encargadosTable" class="table table-striped table-hover table-bordered align-middle">
+            <thead class="table-primary text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Cargo</th>
+                    <th>Teléfono</th>
+                    <th>Correo Electrónico</th>
+                    <th>Especialidad</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for encargado in encargados %}
+                    <tr>
+                        <td class="text-center"><strong>{{ encargado.id }}</strong></td>
+                        <td>{{ encargado.nombre }}</td>
+                        <td>{{ encargado.cargo }}</td>
+                        <td>{{ encargado.telefono }}</td>
+                        <td>{{ encargado.email }}</td>
+                        <td>{{ encargado.especialidad }}</td>
+                        <td class="text-center">
+                            {% if encargado.estado %}
+                                <span class="badge bg-success">Activo</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactivo</span>
+                            {% endif %}
+                        </td>
+                
+                        <td class="text-center">
+                            <a href="{% url 'editarEncargado' encargado.pk %}" class="btn btn-warning btn-sm shadow-sm">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <a href="{% url 'eliminarEncargado' encargado.pk %}" class="btn btn-danger btn-sm shadow-sm" onclick="return confirm('¿Seguro que deseas eliminar este encargado?');">
+                                <i class="fas fa-trash-alt"></i> Eliminar
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Estilos de DataTables -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+
+<!-- Scripts de DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#adultosMayoresTable').DataTable({
+            lengthMenu: [10, 25, 50, 100], [10, 25, 50, 100], // Opciones para seleccionar cantidad de filas
+            pageLength: 10, // Cantidad de filas por defecto
+            language: {
+                url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
+            }
+        });
+    });
+</script>
+
+{% endblock %}

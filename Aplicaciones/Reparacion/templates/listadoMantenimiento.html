@@ -1,0 +1,101 @@
+{% extends "plantilla.html" %}
+
+{% block contenido %}
+<div class="container my-5 bg-light p-4 rounded shadow">
+    <h2 class="my-4 text-center text-primary">
+        <i class="fas fa-cogs"></i> LISTADO DE PLANES DE MANTENIMIENTO
+    </h2>
+
+    {% if messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {% for message in messages %}
+                <p class="mb-0">{{ message }}</p>
+            {% endfor %}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>
+    {% endif %}
+
+    <div class="d-flex justify-content-end mb-4">
+        <a href="{% url 'nuevoMantenimiento' %}" class="btn btn-outline-success btn-lg shadow">
+            <i class="fas fa-plus-circle"></i> Agregar
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table id="planMantenimientoTable" class="table table-striped table-hover table-bordered align-middle">
+            <thead class="table-primary text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>Estructura</th>
+                    <th>Tipo de Mantenimiento</th>
+                    <th>Fecha de Inicio</th>
+                    <th>Fecha de Fin</th>
+                    <th>Estado</th>
+                    <th>Descripción</th>
+                    <th>Documento</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plan in mantenimientos %}
+                    <tr>
+                        <td class="text-center"><strong>{{ plan.id }}</strong></td>
+                        <td>{{ plan.estructura.nombre }}</td>
+                        <td>{{ plan.tipo }}</td>
+                        <td>{{ plan.fecha_inicio }}</td>
+                        <td>{{ plan.fecha_fin|default:"N/A" }}</td>
+                        <td class="text-center">
+                            <span class="badge bg-{% if plan.estado == 'Pendiente' %}warning{% elif plan.estado == 'En Proceso' %}info{% else %}success{% endif %}">
+                                {{ plan.estado }}
+                            </span>
+                        </td>
+                        <td>{{ plan.descripcion }}</td>
+                        <td class="text-center">
+                            {% if plan.documento %}
+                                <a href="{{ plan.documento.url }}" target="_blank">
+                                    Ver Documento
+                                </a>
+                            {% else %}
+                                <span>No hay documento</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'editarMantenimiento' plan.pk %}" class="btn btn-warning btn-sm shadow-sm">
+                                <i class="fas fa-edit"></i> Editar
+                            </a>
+                            <a href="{% url 'eliminarMantenimiento' plan.pk %}" class="btn btn-danger btn-sm shadow-sm" onclick="return confirm('¿Seguro que deseas eliminar este plan de mantenimiento?');">
+                                <i class="fas fa-trash-alt"></i> Eliminar
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Estilos de DataTables -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+
+<!-- Scripts de DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#adultosMayoresTable').DataTable({
+            lengthMenu: [10, 25, 50, 100], [10, 25, 50, 100], // Opciones para seleccionar cantidad de filas
+            pageLength: 10, // Cantidad de filas por defecto
+            language: {
+                url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json"
+            }
+        });
+    });
+</script>
+
+
+{% endblock %}

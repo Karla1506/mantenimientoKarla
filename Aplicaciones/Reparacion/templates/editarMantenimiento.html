@@ -1,0 +1,59 @@
+{% extends "plantilla.html" %}
+
+{% block contenido %}
+<div class="container my-5">
+    <h2 class="my-4 text-center text-primary"><i class="fas fa-cogs"></i> EDITAR PLAN DE MANTENIMIENTO</h2>
+
+    <form action="{% url 'procesarEdicionMantenimiento' mantenimiento.id %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="estructura">Estructura</label>
+            <select class="form-control" id="estructura" name="estructura" required>
+                {% for estructura in estructuras %}
+                    <option value="{{ estructura.id }}" {% if mantenimiento.estructura.id == estructura.id %} selected {% endif %}>{{ estructura.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="tipo">Tipo de Mantenimiento</label>
+            <select class="form-control" id="tipo" name="tipo" required>
+                <option value="Preventivo" {% if mantenimiento.tipo == 'Preventivo' %} selected {% endif %}>Preventivo</option>
+                <option value="Correctivo" {% if mantenimiento.tipo == 'Correctivo' %} selected {% endif %}>Correctivo</option>
+            </select>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="fecha_inicio">Fecha de Inicio</label>
+            <input type="date" class="form-control" id="fecha_inicio" name="fecha_inicio" value="{{ mantenimiento.fecha_inicio|date:'Y-m-d' }}" required>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="fecha_fin">Fecha de Fin</label>
+            <input type="date" class="form-control" id="fecha_fin" name="fecha_fin" value="{{ mantenimiento.fecha_fin|date:'Y-m-d' }}">
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="estado">Estado</label>
+            <select class="form-control" id="estado" name="estado" required>
+                <option value="Pendiente" {% if mantenimiento.estado == 'Pendiente' %} selected {% endif %}>Pendiente</option>
+                <option value="En Proceso" {% if mantenimiento.estado == 'En Proceso' %} selected {% endif %}>En Proceso</option>
+                <option value="Finalizado" {% if mantenimiento.estado == 'Finalizado' %} selected {% endif %}>Finalizado</option>
+            </select>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="descripcion">Descripción</label>
+            <textarea class="form-control" id="descripcion" name="descripcion" rows="4">{{ mantenimiento.descripcion }}</textarea>
+        </div>
+
+        <div class="form-group mt-3">
+            <label for="documento">Subir Documento (Imagen o PDF)</label>
+            <input type="file" class="form-control" id="documento" name="documento" accept="image/*,application/pdf">
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-4">Guardar</button>
+        <a href="{% url 'listadoMantenimiento' %}" class="btn btn-danger mt-4">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
